@@ -934,6 +934,64 @@ templates/articles.html  를 다음과 같이 수정한다.
 ```
 
 
+http://localhost:5000/aritcles Table에 타이틀을 클릭 했을때 상세 페이지가 보여지게 하기위혀여 경로는 http://localhost:5000/detail/id 로 GET 방식으로 
+
+요청일 들어 왔을때 상세페이지를 랜더링 하기위해 
+
+templates/articles.html  를 다음과 같이 수정한다.
+
+```html
+   {% for i in data %}
+                                    <tr class="odd">
+                                        <td class="sorting_1">{{i['id']}}</td>
+                                         <td><a href="/detail/{{i['id']}}">{{i['title']}}</a> </td>
+                                        <td>{{i['author']}}</td>
+                                        <td>{{i['create_at']}}</td>
+                                        <td><button class="btn btn-primary ">편집</button><button class="btn btn-danger">삭제</button></td>
+                                    </tr>
+                                    {% endfor %}
+```
+
+
+app.py 에 다음과 같은 코드를 추가한다.
+
+```python
+@app.route('/detail/<ids>')
+def detail(ids):
+    list_data = Articles()
+    for data in list_data:
+        if data['id']==int(ids):
+            article = data
+    return render_template('article.html',article=article )
+```
+
+
+
+layout.html 을 만들어 다른파일에 extend 하는 형식으로 코드를 바꿔준다.
+
+메뉴바를 보여지게 하기 위하여 편집한다.
+
+
+
+templates/aritcle.html을 생성후 다음과 같이 코드를 추한다.
+
+```html
+ {% extends "layout.html" %} {% block body%}
+
+<div class="jumbotron">
+    <h1 class="display-4">{{article['title'] }}</h1>
+    <p class="lead">{{article['desc'] }}</p>
+    <hr class="my-4">
+    <p> AUTHOR : {{article['author'] }} </p>
+    <a class="btn btn-primary " href="/articles" role="button">BACK</a>
+</div>
+{% endblock %}
+```
+
+
+
+
+
 
 
 

@@ -1,13 +1,20 @@
-def a(name):
-    print("hello"+name)
+import pymysql
 
-if __name__ == "__main__":
-    a("KIM")
-    print(__name__)
+db_connection = pymysql.connect(
+	    user    = 'root',
+        passwd  = '1234',
+    	host    = '127.0.0.1',
+    	db      = 'gangnam',
+    	charset = 'utf8'
+)
 
-else:
-    a()
-    print("aaaaaaa")
-    print(__name__)
+cursor = db_connection.cursor()
 
+sql = 'SELECT * FROM list;'
+
+cursor.execute(sql)
+
+topics = cursor.fetchall()
+
+print(topics)
 
