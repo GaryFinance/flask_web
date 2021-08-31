@@ -188,12 +188,7 @@ def about():
 HTTP(웹 어플리케이션에서 사용하는 프로토콜)는 URL 접근에 대해 몇가지 다른 방식을 제공한다. 기본적으로 GET 방식으로 제공되지만, [`route()`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.Flask.route) 데코레이터에 methods 인자를 제공하면 다른 방식으로 변경할 수 있다. 아래에 몇가지 예가 있다:
 
 ```
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        do_the_login()
-    else:
-        show_the_login_form()
+@app.route('/login', methods=['GET', 'POST'])def login():    if request.method == 'POST':        do_the_login()    else:        show_the_login_form()
 ```
 
 GET 방식이 나타난다면, HEAD 가 자동적으로 더해질것이다. 여러분들이 그것을 처리할 필요가 없다. HEAD 요청은 [HTTP RFC](http://www.ietf.org/rfc/rfc2068.txt) (HTTP프로토콜을 설명하는 문서)의 요청으로써 처리된다는 것을 보장할 것이다. 그래서 여러분은 HTTP명세에 대한 그 부분을 완전히 신경쓰지 않아도 된다. 마찬가지로, 플라스크0.6에서는 OPTION 을 자동으로 처리한다.
@@ -247,12 +242,7 @@ url_for('static', filename='style.css')
 템플릿을 뿌려주기 위해, 어려분은 [`render_template()`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.render_template) 메소드를 사용할 수 있다. 여러분이 해야하는 것은 단지 템플릿의 이름과 템플릿에 보여줄 변수를 키워드 인자로 넘겨주면 된다. 아래는 템플릿을 뿌려주는 방식의 간단한 예를 보여준다
 
 ```
-from flask import render_template
-
-@app.route('/hello/')
-@app.route('/hello/<name>')
-def hello(name=None):
-    return render_template('hello.html', name=name)
+from flask import render_template@app.route('/hello/')@app.route('/hello/<name>')def hello(name=None):    return render_template('hello.html', name=name)
 ```
 
 Flask는 templates 폴더에서 템플릿을 찾는다. 여러분이 모듈로 어플리케이션을 개발했다면 이 폴더는 그 모듈 옆에 위치하고, 패키지로 개발했다면 그 패키지 안에 위치한다 :
@@ -260,18 +250,13 @@ Flask는 templates 폴더에서 템플릿을 찾는다. 여러분이 모듈로 �
 **Case 1**: 모듈:
 
 ```
-/application.py
-/templates
-    /hello.html
+/application.py/templates    /hello.html
 ```
 
 **Case 2**: 패키지:
 
 ```
-/application
-    /__init__.py
-    /templates
-        /hello.html
+/application    /__init__.py    /templates        /hello.html
 ```
 
 플라스크에서는 템플릿에 있어서 Jinja2의 강력함을 사용할 수 있다. Jinja2에 대한 더 자세한 내용은 [Jinja2 Template Documentation](http://jinja.pocoo.org/2/documentation/templates) 공식 문서를 참고하기 바란다.
@@ -279,13 +264,7 @@ Flask는 templates 폴더에서 템플릿을 찾는다. 여러분이 모듈로 �
 여기 템플릿 예제가있다:
 
 ```
-<!doctype html>
-<title>Hello from Flask</title>
-{% if name %}
-  <h1>Hello {{ name }}!</h1>
-{% else %}
-  <h1>Hello World!</h1>
-{% endif %}
+<!doctype html><title>Hello from Flask</title>{% if name %}  <h1>Hello {{ name }}!</h1>{% else %}  <h1>Hello World!</h1>{% endif %}
 ```
 
 템플릿 안에서도 여러분은 [`request`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.request),:class:~flask.session 와 [`g`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.g) [[1\]](https://flask-docs-kr.readthedocs.io/ko/latest/quickstart.html#id13) 객체에 접근할 수 있다.
@@ -297,13 +276,7 @@ Flask는 templates 폴더에서 템플릿을 찾는다. 여러분이 모듈로 �
 여기에 `Markup` 클래스를 사용하는 예제가 있다:
 
 ```
->>> from flask import Markup
->>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'
-Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')
->>> Markup.escape('<blink>hacker</blink>')
-Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')
->>> Markup('<em>Marked up</em> &raquo; HTML').striptags()
-u'Marked up \xbb HTML'
+>>> from flask import Markup>>> Markup('<strong>Hello %s!</strong>') % '<blink>hacker</blink>'Markup(u'<strong>Hello &lt;blink&gt;hacker&lt;/blink&gt;!</strong>')>>> Markup.escape('<blink>hacker</blink>')Markup(u'&lt;blink&gt;hacker&lt;/blink&gt;')>>> Markup('<em>Marked up</em> &raquo; HTML').striptags()u'Marked up \xbb HTML'
 ```
 
 *버전 0.5으로 변경:* Autoescaping is no longer enabled for all templates. The following extensions for templates trigger autoescaping: `.html`, `.htm`, `.xml`, `.xhtml`. Templates loaded from a string will have autoescaping disabled.
@@ -327,22 +300,13 @@ Flask 에서 어떤 객체들은 보통 객체들이 아닌 전역 객체들이�
 그렇다면 이것은 여러분에게 어떤 의미인가? 기본적으로 여러분이 유닛 테스트(Unit Test)와 같은 것을 하지 않는다면 이것을 완전히 무시할 수 있다. 여러분은 요청 객체에 의존하는 코드가 갑자기 깨지는것을 알게 될것인데, 왜냐하면 요청 객체가 존재하지 않기 때문이다. 해결책은 요청 객체를 생성해서 그 객체를 문맥에 연결하는 것이다. 유닛 테스트에 있어서 가장 쉬운 해결책은 [`test_request_context()`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.Flask.test_request_context) 문맥 관리자(Context Manager)를 사용하는 것이다. with 절과 함께 사용해서 test_request_context() 문맥 관리자는 테스트 요청을 연결할 것이고, 그렇게해서 여러분은 그 객체와 상호 작용할 수 있다. 아래에 예가 있다:
 
 ```
-from flask import request
-
-with app.test_request_context('/hello', method='POST'):
-    # now you can do something with the request until the
-    # end of the with block, such as basic assertions:
-    assert request.path == '/hello'
-    assert request.method == 'POST'
+from flask import requestwith app.test_request_context('/hello', method='POST'):    # now you can do something with the request until the    # end of the with block, such as basic assertions:    assert request.path == '/hello'    assert request.method == 'POST'
 ```
 
 다른 방법은 WSGI 환경 변수를 [`request_context()`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.Flask.request_context) 메소드에 인자로 넘기는 것이다.
 
 ```
-from flask import request
-
-with app.request_context(environ):
-    assert request.method == 'POST'
+from flask import requestwith app.request_context(environ):    assert request.method == 'POST'
 ```
 
 ### 요청 객체
@@ -356,17 +320,7 @@ from flask import request
 현재 요청 메소도는 `method` 속성으로 사용할 수 있다. 폼 데이타( HTTP POST 나 PUT 요청으로 전달된 데이타)에 접근하려면, `form` 속성을 사용할 수 있다. 아래에 위에서 언급한 두가지 속성에 대한 완전한 예제가 있다:
 
 ```
-@app.route('/login', methods=['POST', 'GET'])
-def login():
-    error = None
-    if request.method == 'POST':
-        if valid_login(request.form['username'],
-                       request.form['password']):
-            return log_the_user_in(request.form['username'])
-        else:
-            error = 'Invalid username/password'
-    # 아래의 코드는 요청이 GET 이거나, 인증정보가 잘못됐을때 실행된다.
-    return render_template('login.html', error=error)
+@app.route('/login', methods=['POST', 'GET'])def login():    error = None    if request.method == 'POST':        if valid_login(request.form['username'],                       request.form['password']):            return log_the_user_in(request.form['username'])        else:            error = 'Invalid username/password'    # 아래의 코드는 요청이 GET 이거나, 인증정보가 잘못됐을때 실행된다.    return render_template('login.html', error=error)
 ```
 
 위에 폼 에 접근한 키(username이나 password)가 존재하지 않으면 어떻게 되나? KeyError가 발생한다. 여러분은 표준적인 [`KeyError`](http://docs.python.org/dev/library/exceptions.html#KeyError) 로 이 예외를 잡을 수 있지만, 예외처리를 하지 않는다면 HTTP 400 잘못된 요청(Bad Request)에 대한 오류 페이지를 보여준다. 그렇기 때문에 대다수의 상황에서 이 문제를 여러분이 직접 처리할 필요는 없다.
@@ -388,28 +342,13 @@ searchword = request.args.get('key', '')
 업로드된 파일들은 메모리나 파일시스템의 임시 장소에 저장된다. 여러분이 `files` 객체의 files 속성을 찾아 그 파일들에 접근할 수 있다. 업로드된 각 파일들은 그 dictionary 안에 저장되어 있다. 그것은 마치 표준 파이썬 `file` 객체처럼 행동한다. 그러나 서버의 파일시스템에 파일을 저장하도록 하는 [`save()`](http://werkzeug.pocoo.org/docs/datastructures/#werkzeug.datastructures.FileStorage.save) 메소드 또한 가지고 있다. 아래 save 메소드가 어떻게 실행되는지를 보여주는 간단한 예제가 있다:
 
 ```
-from flask import request
-
-@app.route('/upload', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        f = request.files['the_file']
-        f.save('/var/www/uploads/uploaded_file.txt')
-    ...
+from flask import request@app.route('/upload', methods=['GET', 'POST'])def upload_file():    if request.method == 'POST':        f = request.files['the_file']        f.save('/var/www/uploads/uploaded_file.txt')    ...
 ```
 
 만약 여러분의 어플리케이션에 파일이 업로드되기 전 클라이언트에서의 파일명을 알고 싶다면, [`filename`](http://werkzeug.pocoo.org/docs/datastructures/#werkzeug.datastructures.FileStorage.filename) 속성에 접근할 수 있다. 그러나 이 값은 위조될 수 있으며 결코 신뢰할 수 없는 값인 것을 명심해라. 만약 서버에 저장되는 파일명을 클라이언트에서의 파일명을 그대로 사용하기를 원한다면, Werkzeug에서 제공하는 [`secure_filename()`](http://werkzeug.pocoo.org/docs/utils/#werkzeug.utils.secure_filename) 함수에 그 파일명을 전달하라:
 
 ```
-from flask import request
-from werkzeug import secure_filename
-
-@app.route('/upload', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        f = request.files['the_file']
-        f.save('/var/www/uploads/' + secure_filename(f.filename))
-    ...
+from flask import requestfrom werkzeug import secure_filename@app.route('/upload', methods=['GET', 'POST'])def upload_file():    if request.method == 'POST':        f = request.files['the_file']        f.save('/var/www/uploads/' + secure_filename(f.filename))    ...
 ```
 
 더 나은 예제를 보고 싶다면 [파일 업로드하기](https://flask-docs-kr.readthedocs.io/ko/latest/patterns/fileuploads.html#uploading-files) 챕터의 패턴을 확인하라.
@@ -421,25 +360,13 @@ def upload_file():
 Reading cookies:
 
 ```
-from flask import request
-
-@app.route('/')
-def index():
-    username = request.cookies.get('username')
-    # use cookies.get(key) instead of cookies[key] to not get a
-    # KeyError if the cookie is missing.
+from flask import request@app.route('/')def index():    username = request.cookies.get('username')    # use cookies.get(key) instead of cookies[key] to not get a    # KeyError if the cookie is missing.
 ```
 
 Storing cookies:
 
 ```
-from flask import make_response
-
-@app.route('/')
-def index():
-    resp = make_response(render_template(...))
-    resp.set_cookie('username', 'the username')
-    return resp
+from flask import make_response@app.route('/')def index():    resp = make_response(render_template(...))    resp.set_cookie('username', 'the username')    return resp
 ```
 
 쿠키가 respone 객체에 저장되는 것을 주목하다. 여러분이 보통 뷰 함수로부터 단지 문자열을 반환하기 때문에, Flask는 그 문자열들을 여러분을 위해 response 객체로 변환할 것이다. 만약 여러분이 명시적으로 변환하기를 원한다면 여러분은 [`make_response()`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.make_response) 함수를 사용하여 값을 변경할 수 있다.
@@ -453,16 +380,7 @@ def index():
 사용자가 다른 엔드포인트로 redirect하기 위해서는 [`redirect()`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.redirect) 함수를 사용하라. 에러콛를 가지고 일찍 요청을 중단하기를 원한다면 [`abort()`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.abort) 함수를 사용하라:
 
 ```
-from flask import abort, redirect, url_for
-
-@app.route('/')
-def index():
-    return redirect(url_for('login'))
-
-@app.route('/login')
-def login():
-    abort(401)
-    this_is_never_executed()
+from flask import abort, redirect, url_for@app.route('/')def index():    return redirect(url_for('login'))@app.route('/login')def login():    abort(401)    this_is_never_executed()
 ```
 
 위 코드는 사용자가 인덱스 페이지에서 그들이 접근할 수 없는(401은 접근불가를 의미) 페이지로 redirect되어질 것이기 때문에 다소 무의미한 예제일 수는 있으나 어떻게 작동된다는 것을 보여주고 있다.
@@ -470,11 +388,7 @@ def login():
 기본으로 하얀 화면에 검정 글씨의 에러 페이지가 각 에러코드를 위해 보여진다. 만약 여러분이 에러페이지를 변경하기를 원한다면 [`errorhandler()`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.Flask.errorhandler) 데코레이터를 사용할 수 있다:
 
 ```
-from flask import render_template
-
-@app.errorhandler(404)
-def page_not_found(error):
-    return render_template('page_not_found.html'), 404
+from flask import render_template@app.errorhandler(404)def page_not_found(error):    return render_template('page_not_found.html'), 404
 ```
 
 [`render_template()`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.render_template) 호출 뒤에 있는 `404` 를 주목해하. 이것은 페이지의 상태 코드가 그 페이지를 찾을 수 없다는 404가 되어야 하는 것을 Flask에게 말해 준다. 기본으로 200이 가정되며, 그것은 모든 것이 잘 실행됐다는 것으로 해석된다.
@@ -495,19 +409,13 @@ view 함수로부터 반환되는 값은 자동으로 response 객체로 변환�
 아래와 같은 뷰를 가지고 있다고 상상해 보아라:
 
 ```
-@app.errorhandler(404)
-def not_found(error):
-    return render_template('error.html'), 404
+@app.errorhandler(404)def not_found(error):    return render_template('error.html'), 404
 ```
 
 여러분은 단지 [`make_response()`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.make_response) 함수를 사용하여 반환되는 표현을 래핑하고, 변경을 위해 결과 객체를 얻은 다음 반환하기만 하면 된다:
 
 ```
-@app.errorhandler(404)
-def not_found(error):
-    resp = make_response(render_template('error.html'), 404)
-    resp.headers['X-Something'] = 'A value'
-    return resp
+@app.errorhandler(404)def not_found(error):    resp = make_response(render_template('error.html'), 404)    resp.headers['X-Something'] = 'A value'    return resp
 ```
 
 
@@ -519,36 +427,7 @@ Request object외에도 하나의 요청에서 다음 요청까지 사용자에 
 세션을 사용하기 위해서는 비밀키를 설정해야 한다. 아래 세션이 어떻게 사용되는지 참조해라:
 
 ```
-from flask import Flask, session, redirect, url_for, escape, request
-
-app = Flask(__name__)
-
-@app.route('/')
-def index():
-    if 'username' in session:
-        return 'Logged in as %s' % escape(session['username'])
-    return 'You are not logged in'
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        session['username'] = request.form['username']
-        return redirect(url_for('index'))
-    return '''
-        <form action="" method="post">
-            <p><input type=text name=username>
-            <p><input type=submit value=Login>
-        </form>
-    '''
-
-@app.route('/logout')
-def logout():
-    # remove the username from the session if it's there
-    session.pop('username', None)
-    return redirect(url_for('index'))
-
-# set the secret key.  keep this really secret:
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+from flask import Flask, session, redirect, url_for, escape, requestapp = Flask(__name__)@app.route('/')def index():    if 'username' in session:        return 'Logged in as %s' % escape(session['username'])    return 'You are not logged in'@app.route('/login', methods=['GET', 'POST'])def login():    if request.method == 'POST':        session['username'] = request.form['username']        return redirect(url_for('index'))    return '''        <form action="" method="post">            <p><input type=text name=username>            <p><input type=submit value=Login>        </form>    '''@app.route('/logout')def logout():    # remove the username from the session if it's there    session.pop('username', None)    return redirect(url_for('index'))# set the secret key.  keep this really secret:app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 ```
 
 위 예제에서 [`escape()`](https://flask-docs-kr.readthedocs.io/ko/latest/ko/api.html#flask.escape) 는 템플릿 엔진을 사용하지 않을경우 이스케이프를 한다.
@@ -556,9 +435,7 @@ app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 무작위(랜덤)로 생성하는 것의 문제는 정말 그것이 무작위(랜덤)한 것인지 판단하기 어렵다는 것이다. 비밀키는 가능한 한 무작위로 생성되어야 하다. 여러분의 OS는 키를 얻는 데 사용할 수 있는 cryptographic random generator(암호 난수 발생기) 기반의 꽤 무작위의 키를 생성하는 방법을 제공한다. :
 
 > ```
-> >>> import os
-> >>> os.urandom(24)
-> '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
+> >>> import os>>> os.urandom(24)'\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
 > ```
 >
 > 위 코드를 여러분의 코드에 복사하기/붙혀넣기만 하면 된다.
@@ -580,9 +457,7 @@ app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 아래 로그를 출력하는 예제가 있다.
 
 ```
-app.logger.debug('A value for debugging')
-app.logger.warning('A warning occurred (%d apples)', 42)
-app.logger.error('An error occurred')
+app.logger.debug('A value for debugging')app.logger.warning('A warning occurred (%d apples)', 42)app.logger.error('An error occurred')
 ```
 
 첨부된 `Logger` 이다. 더 많은 정보를 원하면 [logging documentation](http://docs.python.org/library/logging.html) 문서를 참조해라.
@@ -592,8 +467,7 @@ app.logger.error('An error occurred')
 만약 여러분이 여러분이 개발한 어플리케이션을 WSGI 미들웨어에 올리기를 원한다면 여러분은 내부 WSGI 어플리케이션을 래핑할 수 있다. 예를 들면 여러분이 lighttpd의 버그를 피하기 위해 Werkzeug 패키지의 미들웨어 중 하나를 사용하기를 원한다면, 여러분은 아래 코드와 같이 내부 WSGI 어플리케이션을 래핑할 수 있다:
 
 ```
-from werkzeug.contrib.fixers import LighttpdCGIRootFix
-app.wsgi_app = LighttpdCGIRootFix(app.wsgi_app)
+from werkzeug.contrib.fixers import LighttpdCGIRootFixapp.wsgi_app = LighttpdCGIRootFix(app.wsgi_app)
 ```
 
 
@@ -632,12 +506,7 @@ pip install virtualenv
 
 
 ```powershell
-C:\apps> virtualenv flask_web
-C:\apps> cd flask_web
-C:\apps\flask_web> Scripts/activate
-
-다음과 같은 형태가 된다.
-(flask_web) C:\apps\flask_web>
+C:\apps> virtualenv flask_webC:\apps> cd flask_webC:\apps\flask_web> Scripts/activate다음과 같은 형태가 된다.(flask_web) C:\apps\flask_web>
 ```
 
 
@@ -649,17 +518,7 @@ app.py파일을 생성후 다음과 같이 코드를 생성한다.
 
 
 ```python
-from flask import Flask
-
-app = Flask(__name__)
-
-@app.route('/hello')
-def hello_world():
-    return 'Hello World!'
-
-if __name__ == '__main__':
-    app.run()
-
+from flask import Flaskapp = Flask(__name__)@app.route('/hello')def hello_world():    return 'Hello World!'if __name__ == '__main__':    app.run()
 ```
 
 
@@ -691,14 +550,7 @@ app.py에 다음과 같은 코드를 추가한다.
 
 
 ```python
-....
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    name="KIM"
-    return render_template('index.html',data=name)
-
-....
+....@app.route('/', methods=['GET', 'POST'])def index():    name="KIM"    return render_template('index.html',data=name)....
 ```
 
 
@@ -708,22 +560,7 @@ def index():
 templates/index.html 을 생성후  다음과 같은 코드를 추가한다.
 
 ```html
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>index 페이지</title>
-</head>
-
-<body>
-    <h1>INDEX PAGE</h1>
-    <h1>Hello {{ data }}</h1>
-</body>
-
-</html>
+<!DOCTYPE html><html lang="en"><head>    <meta charset="UTF-8">    <meta http-equiv="X-UA-Compatible" content="IE=edge">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>index 페이지</title></head><body>    <h1>INDEX PAGE</h1>    <h1>Hello {{ data }}</h1></body></html>
 ```
 
 
@@ -742,9 +579,9 @@ jinja 템플릿 문법은 크게 두가지로 구분할 수 있음
 
 *  {# ... #} : 주석
 
-* {%- ... %}, {%+ ... %}, {% ... -%} ... : 공백 제거 혹은 유지
+*  {%- ... %}, {%+ ... %}, {% ... -%} ... : 공백 제거 혹은 유지
 
-* {% raw %} ... {% endraw %} : 이스케이프
+*  {% raw %} ... {% endraw %} : 이스케이프
 
 
 
@@ -761,15 +598,7 @@ Mock DATA를 임의로 만들어서 구현해 본다.
 data.py 
 
 ```python
-def Article():
-    
-    articles = [
-        {'id':1 , 'title':'python', 'desc':'창시자는 네덜란드의 프로그래머 귀도 반 로섬(Guido van Rossum).[3] 1989년 크리스마스 주에, 연구실이 닫혀있어서 심심한 김에 만든 프로그래밍 언어이다. 농담이 아니고 반 로섬을 유럽에서는 애덤 스미스에 비교할 정도며, 네덜란드에서는 기술자의 대명사로 취급된다. 프로그래밍 계의 경제학자라나... 심심해서 만들었다는 것은 파이썬 서문과 마이크로소프트웨어와 한 인터뷰를 보면 알겠지만 사실이다. 능력 있는 기술자들은 대부분 심심할 때, 혹은 실수로 걸작을 만든다. 2000년에는 Python 2, 2008년에는 Python 3가 나왔다.','author':'Gary', 'create_at':'30_08_2021'},
-        {'id':2 , 'title':'AI', 'desc':'인공 지능1 분야에는 몇 가지 기술이 있다. 기계 학습2은 기본적인 규칙만 주어진 상태에서 입력받은 정보를 활용해 스스로 학습하는 것이다. 인공 신경망3이란, 인간의 뉴런 구조를 본떠 만든 기계 학습 모델이다. 딥 러닝4은 입력과 출력 사이에 있는 인공 뉴런들을 여러개 층층히 쌓고 연결한 인공신경망 기법을 주로 다루는 연구이다. 즉, 단일 층이 아닌 실제 뇌처럼 여러 계층으로 되어있다. 인지 컴퓨팅5은 기계학습을 이용하여 특정한 인지적 과제를 해결할 수 있는 프로그램 또는 솔루션을 이야기한다. 끝으로, 뉴로모픽 컴퓨팅6은 인공신경망을 하드웨어적으로 구현한 것이라고 생각하면 된다.','author':'Gary', 'create_at':'30_08_2021'},
-        {'id':3 , 'title':'bigdataProcessing', 'desc':'과거에는 알 수 없었던 매우 사소한 정보[1]까지도 디지털 정보로 기록되는 정보화 시대에서는 너무나도 정보의 양이 많아졌다. 거기에 더해 단순한 문자 데이터에서 벗어나 녹음, 사진, 동영상 등 데이터의 종류가 다양해지고 데이터의 용량 자체도 큰 폭으로 늘어났다. 이런 빅 데이터는 기존의 기술이나 도구로는 원활한 수집과 처리가 불가능할 정도로 성질이 달라졌으므로 빅 데이터에서 유용한 정보를 추합하거나 가치를 뽑아내기 위해서 고안된 기술이 바로 빅 데이터 프로세싱이다.','author':'James', 'create_at':'30_08_2021'}
-        
-        ]
-    return articles
+def Article():        articles = [        {'id':1 , 'title':'python', 'desc':'창시자는 네덜란드의 프로그래머 귀도 반 로섬(Guido van Rossum).[3] 1989년 크리스마스 주에, 연구실이 닫혀있어서 심심한 김에 만든 프로그래밍 언어이다. 농담이 아니고 반 로섬을 유럽에서는 애덤 스미스에 비교할 정도며, 네덜란드에서는 기술자의 대명사로 취급된다. 프로그래밍 계의 경제학자라나... 심심해서 만들었다는 것은 파이썬 서문과 마이크로소프트웨어와 한 인터뷰를 보면 알겠지만 사실이다. 능력 있는 기술자들은 대부분 심심할 때, 혹은 실수로 걸작을 만든다. 2000년에는 Python 2, 2008년에는 Python 3가 나왔다.','author':'Gary', 'create_at':'30_08_2021'},        {'id':2 , 'title':'AI', 'desc':'인공 지능1 분야에는 몇 가지 기술이 있다. 기계 학습2은 기본적인 규칙만 주어진 상태에서 입력받은 정보를 활용해 스스로 학습하는 것이다. 인공 신경망3이란, 인간의 뉴런 구조를 본떠 만든 기계 학습 모델이다. 딥 러닝4은 입력과 출력 사이에 있는 인공 뉴런들을 여러개 층층히 쌓고 연결한 인공신경망 기법을 주로 다루는 연구이다. 즉, 단일 층이 아닌 실제 뇌처럼 여러 계층으로 되어있다. 인지 컴퓨팅5은 기계학습을 이용하여 특정한 인지적 과제를 해결할 수 있는 프로그램 또는 솔루션을 이야기한다. 끝으로, 뉴로모픽 컴퓨팅6은 인공신경망을 하드웨어적으로 구현한 것이라고 생각하면 된다.','author':'Gary', 'create_at':'30_08_2021'},        {'id':3 , 'title':'bigdataProcessing', 'desc':'과거에는 알 수 없었던 매우 사소한 정보[1]까지도 디지털 정보로 기록되는 정보화 시대에서는 너무나도 정보의 양이 많아졌다. 거기에 더해 단순한 문자 데이터에서 벗어나 녹음, 사진, 동영상 등 데이터의 종류가 다양해지고 데이터의 용량 자체도 큰 폭으로 늘어났다. 이런 빅 데이터는 기존의 기술이나 도구로는 원활한 수집과 처리가 불가능할 정도로 성질이 달라졌으므로 빅 데이터에서 유용한 정보를 추합하거나 가치를 뽑아내기 위해서 고안된 기술이 바로 빅 데이터 프로세싱이다.','author':'James', 'create_at':'30_08_2021'}                ]    return articles
 ```
 
 
@@ -783,17 +612,7 @@ app.py에 다음과 같은 코드를 추가한다.
 
 
 ```python
-....
-from data import Articles
-
-....
-
-@app.route('/articles', methods=['GET', 'POST'])
-def articles():
-    list_data = Articles()
-    return render_template('articles.html', data = list_data)
-
-....
+....from data import Articles....@app.route('/articles', methods=['GET', 'POST'])def articles():    list_data = Articles()    return render_template('articles.html', data = list_data)....
 ```
 
 
@@ -801,24 +620,7 @@ def articles():
 templates/articles.html 
 
 ```html
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시판</title>
-</head>
-
-<body>
-    <h1>게시판</h1>
-    {% for i in data %}
-    <h3>{{ i['title'] }} : {{ i['desc'] }}<br></h3>
-    {% endfor %}
-</body>
-
-</html>
+<!DOCTYPE html><html lang="en"><head>    <meta charset="UTF-8">    <meta http-equiv="X-UA-Compatible" content="IE=edge">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>게시판</title></head><body>    <h1>게시판</h1>    {% for i in data %}    <h3>{{ i['title'] }} : {{ i['desc'] }}<br></h3>    {% endfor %}</body></html>
 ```
 
 
@@ -836,101 +638,7 @@ templates/articles.html
 templates/articles.html  를 다음과 같이 수정한다.
 
 ```html
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Custom fonts for this template -->
-    <link href="{{url_for('static', filename='vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{{url_for('static', filename='css/sb-admin-2.min.css')}}" rel="stylesheet">
-
-    <!-- Custom styles for this page -->
-    <link href="{{url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
-    <title>게시판</title>
-</head>
-
-<body>
-    <h1>게시판</h1>
-
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">LIST Page</h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
-
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
-                                <thead>
-                                    <tr role="row">
-                                        <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 271px;">ID</th>
-                                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 403px;">TITLE</th>
-                                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 199px;">AUTHOR</th>
-                                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 101px;">DATE</th>
-                                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 189px;">EDIT</th>
-
-                                    </tr>
-                                </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th rowspan="1" colspan="1">ID</th>
-                                        <th rowspan="1" colspan="1">TITLE</th>
-                                        <th rowspan="1" colspan="1">AUTHOR</th>
-                                        <th rowspan="1" colspan="1">DATE</th>
-                                        <th rowspan="1" colspan="1">EDIT</th>
-
-                                    </tr>
-                                </tfoot>
-                                <tbody>
-
-                                    {% for i in data %}
-                                    <tr class="odd">
-                                        <td class="sorting_1">{{i['id']}}</td>
-                                        <td>{{i['title']}}</td>
-                                        <td>{{i['author']}}</td>
-                                        <td>{{i['create_at']}}</td>
-                                        <td><button class="btn btn-primary ">편집</button><button class="btn btn-danger">삭제</button></td>
-                                    </tr>
-                                    {% endfor %}
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ url_for( 'static', filename='vendor/jquery/jquery.min.js')}}"></script>
-    <script src="{{ url_for( 'static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="{{ url_for( 'static', filename='vendor/jquery-easing/jquery.easing.min.js')}}"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="{{ url_for( 'static', filename='js/sb-admin-2.min.js')}}"></script>
-
-    <!-- Page level plugins -->
-    <script src="{{ url_for( 'static', filename='vendor/datatables/jquery.dataTables.min.js')}}"></script>
-    <script src="{{ url_for( 'static', filename='vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="{{ url_for( 'static', filename='js/demo/datatables-demo.js')}}"></script>
-
-</body>
-
-</html>
+<!DOCTYPE html><html lang="en"><head>    <meta charset="UTF-8">    <meta http-equiv="X-UA-Compatible" content="IE=edge">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <!-- Custom fonts for this template -->    <link href="{{url_for('static', filename='vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">    <!-- Custom styles for this template -->    <link href="{{url_for('static', filename='css/sb-admin-2.min.css')}}" rel="stylesheet">    <!-- Custom styles for this page -->    <link href="{{url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">    <title>게시판</title></head><body>    <h1>게시판</h1>    <div class="card shadow mb-4">        <div class="card-header py-3">            <h6 class="m-0 font-weight-bold text-primary">LIST Page</h6>        </div>        <div class="card-body">            <div class="table-responsive">                <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">                    <div class="row">                        <div class="col-sm-12">                            <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">                                <thead>                                    <tr role="row">                                        <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 271px;">ID</th>                                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 403px;">TITLE</th>                                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 199px;">AUTHOR</th>                                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 101px;">DATE</th>                                        <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 189px;">EDIT</th>                                    </tr>                                </thead>                                <tfoot>                                    <tr>                                        <th rowspan="1" colspan="1">ID</th>                                        <th rowspan="1" colspan="1">TITLE</th>                                        <th rowspan="1" colspan="1">AUTHOR</th>                                        <th rowspan="1" colspan="1">DATE</th>                                        <th rowspan="1" colspan="1">EDIT</th>                                    </tr>                                </tfoot>                                <tbody>                                    {% for i in data %}                                    <tr class="odd">                                        <td class="sorting_1">{{i['id']}}</td>                                        <td>{{i['title']}}</td>                                        <td>{{i['author']}}</td>                                        <td>{{i['create_at']}}</td>                                        <td><button class="btn btn-primary ">편집</button><button class="btn btn-danger">삭제</button></td>                                    </tr>                                    {% endfor %}                                </tbody>                            </table>                        </div>                    </div>                </div>            </div>        </div>    </div>    <!-- Bootstrap core JavaScript-->    <script src="{{ url_for( 'static', filename='vendor/jquery/jquery.min.js')}}"></script>    <script src="{{ url_for( 'static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>    <!-- Core plugin JavaScript-->    <script src="{{ url_for( 'static', filename='vendor/jquery-easing/jquery.easing.min.js')}}"></script>    <!-- Custom scripts for all pages-->    <script src="{{ url_for( 'static', filename='js/sb-admin-2.min.js')}}"></script>    <!-- Page level plugins -->    <script src="{{ url_for( 'static', filename='vendor/datatables/jquery.dataTables.min.js')}}"></script>    <script src="{{ url_for( 'static', filename='vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>    <!-- Page level custom scripts -->    <script src="{{ url_for( 'static', filename='js/demo/datatables-demo.js')}}"></script></body></html>
 ```
 
 
@@ -990,6 +698,173 @@ templates/aritcle.html을 생성후 다음과 같이 코드를 추한다.
 
 
 
+### mysql과 연동하는 게시판 기능을 구현한다.
+
+
+
+mysql 설치 
+
+![image-20210831163404167](https://user-images.githubusercontent.com/25717861/131471416-106b6a68-24bd-474c-a6b2-9e10eec7f765.png)
+
+
+
+클릭후
+
+
+
+![image-20210831163427130](https://user-images.githubusercontent.com/25717861/131471472-533cc005-227d-464e-bba9-ff18371ff274.png)
+
+클릭
+
+![image-20210831163427130](https://user-images.githubusercontent.com/25717861/131471472-533cc005-227d-464e-bba9-ff18371ff274.png)
+
+
+
+
+
+다운로드후  mysql server 버전에 맞는 microsoft visual c++ 을 설치하고 계속해서 mysql-server , myworbench를 설치 한다.
+
+
+
+#### database 생성
+
+```mysql
+create database gangnam;
+```
+
+
+
+#### table 생성
+
+```mysql
+use gangnam;
+CREATE TABLE `gangnam`.`list` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(100) NULL,
+  `desc` TEXT NULL,
+  `author` VARCHAR(45) NULL,
+  `create_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+```
+
+
+
+
+
+mysql과 연동을 위하여 
+
+pymysql 라이브러리를 이용해서 연동한다.
+
+
+
+```powershell
+pip install pymysql 
+```
+
+
+
+
+
+app.py 에 다음과 같은 코드를 추가한다.
+
+
+
+```python
+...
+import pymysql
+
+db_connection = pymysql.connect(
+	    user    = 'root',
+        passwd  = '1234',
+    	host    = '127.0.0.1',
+    	db      = 'gangnam',
+    	charset = 'utf8'
+)
+....
+
+
+
+```
+
+
+
+
+
+계속해서
+
+http://localhost:5000/articles 방식 : GET 요청하였을때 mysql의 gangnam schema에 list 테이블 조회해서 랜더링 해주는 기능 구현
+
+app.py 의 @app.route('/articles') 부분을 다음과 같이 수정한다.
+
+
+
+```python
+@app.route('/articles', methods=['GET', 'POST'])
+def articles():
+    # list_data = Articles()
+    cursor = db_connection.cursor()
+    sql = 'SELECT * FROM list;'
+    cursor.execute(sql)
+    topics = cursor.fetchall()
+    print(topics)
+    return render_template('articles.html', data = topics)
+```
+
+
+
+
+
+다음과 같은 화면을 볼 수 있다.
+
+
+
+!![image-20210831164150529](https://user-images.githubusercontent.com/25717861/131471760-4ce421c4-a158-49cd-9bb2-9255dbb1e5e2.png)
+
+
+
+타이틀 클릭시 
+
+http://localhost:5000/detail/id 방식:GET  으로 요청되고 상세페이지가 랜더링 되는 기능을 구현하기 위해
+
+@app.route('/detail/<ids>')부분을 다음과 같이 수정한다.
+
+```python
+@app.route('/detail/<ids>')
+def detail(ids):
+    # list_data = Articles()
+    cursor = db_connection.cursor()
+    sql = f'SELECT * FROM list WHERE id={int(ids)};'
+    cursor.execute(sql)
+    topic = cursor.fetchone()
+    print(topic)
+    # for data in list_data:
+    #     if data['id']==int(ids):
+    #         article = data
+
+    return render_template('article.html',article=topic)
+```
+
+
+
+다음과 같은 결과물을 확인 할 수 있다.
+
+![image-20210831164417161](https://user-images.githubusercontent.com/25717861/131471697-f7ea80b7-69dc-41e8-9308-7798695c7b14.png)
+
+
+
+http://locahost:5000/articles 페이지에서 삭제 버튼을 누루면 그에 해당하는 섹션이 delete되도록 하는 기능 구현한다.
+
+
+
+article.html의 삭제 버튼 부분을 코드를 수정한다.
+
+
+
+```html
+<a href="/delete/{{i[0]}}"><button class="btn btn-danger">삭제</button></a>
+```
 
 
 
