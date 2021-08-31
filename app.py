@@ -1,4 +1,4 @@
-from flask import Flask , render_template
+from flask import Flask , render_template , redirect
 from data import Articles
 import pymysql
 
@@ -44,6 +44,14 @@ def detail(ids):
     #         article = data
 
     return render_template('article.html',article=topic)
+
+@app.route('/delete/<ids>', methods=['GET', 'POST'])
+def delete(ids):
+    cursor = db_connection.cursor()
+    sql = f'DELETE FROM list WHERE (id = {ids});'
+    cursor.execute(sql)
+    db_connection.commit()
+    return redirect('/articles')
 
 if __name__ == '__main__':
     app.run( debug=True )
