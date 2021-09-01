@@ -936,3 +936,90 @@ templates/add_article.html 생성후 다음과 같이 코드를 추가한다.
 {% endblock %}
 ```
 
+
+
+게시판의 편집버튼을 누루면 해당하는 글의 내용을 수정할수 있는 페이를 만들고 수정하는 기능구현한다.
+
+http://localhost:5000/edi_article/id  방식:POST
+
+body : {
+
+​	"title": <편집한타이틀>,
+
+   "desc":<편집한 내용>,
+
+   "author": <편집한 글쓴이>
+
+}
+
+
+
+app.py
+
+@app.route('/edit_article/<id>')...
+
+이와같은 코드를 추가한다.
+
+```python
+@app.route('/edit_article/<ids>', methods=['GET', 'POST'])
+def edit_article(ids):
+    if request.method == 'GET':
+        
+        return "pass"
+    else:
+        title = request.form["title"]
+        desc = request.form["desc"]
+        author = request.form["author"]
+
+        cursor = db_connection.cursor()
+        sql = f"UPDATE list SET title= '{title}', description = '{desc}' ,author='{author}' WHERE (id = {int(ids)});"
+        cursor.execute(sql)
+        db_connection.commit()
+        return redirect('/articles')
+```
+
+
+
+게시판페이지의 편집버튼을 클릭시 http://localhost:5000/edit_article/id 방식: GET 방식으로 요청되었을때
+
+edit_article.html 이 랜더링 되도록 한다.
+
+
+
+edit_article.html 을 다음과 같이 수정한다.
+
+
+
+```html
+{% extends "layout.html" %} {% block body%}
+
+<div class="jumbotron">
+
+    <form action="/edit_article/{{ article[0]}}" , method="POST">
+        <div class="form-group">
+            <h1 class="display-4">
+                <label for="exampleInputEmail1">TITLE</label>
+                <input type="text" class="form-control" name="title" id="exampleInputEmail1" value="{{article[1]}}">
+            </h1>
+        </div>
+
+        <div class="form-group">
+            <p class="lead">
+                <label for="exampleFormControlTextarea1">DESCRIPTION</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" name="desc" rows="3"> {{ article[2]}}</textarea>
+            </p>
+        </div>
+        <hr class="my-4">
+        <div class="form-group">
+            <label for="exampleInputEmail1">AUTHOR</label>
+            <input type="text" class="form-control" name="author" id="exampleInputEmail1" value="{{article[3]}}">
+
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+</div>
+<a href="/articles"><button  class="btn btn-warning">BACK</button></a> {% endblock %}
+```
+

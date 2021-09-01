@@ -62,6 +62,26 @@ def add_article():
         return redirect('/articles')
 
 
+@app.route('/edit_article/<ids>', methods=['GET', 'POST'])
+def edit_article(ids):
+    if request.method == 'GET':
+        cursor = db_connection.cursor()
+        sql = f'SELECT * FROM list WHERE id={int(ids)};'   
+        cursor.execute(sql)
+        topic = cursor.fetchone()  
+        print(topic)
+        return render_template('edit_article.html', article = topic)
+
+    else:
+        title = request.form["title"]
+        desc = request.form["desc"]
+        author = request.form["author"]
+
+        cursor = db_connection.cursor()
+        sql = f"UPDATE list SET title= '{title}', description = '{desc}' ,author='{author}' WHERE (id = {int(ids)});"
+        cursor.execute(sql)
+        db_connection.commit()
+        return redirect('/articles')
 
 @app.route('/delete/<ids>', methods=['GET', 'POST'])
 def delete(ids):
