@@ -868,5 +868,71 @@ article.html의 삭제 버튼 부분을 코드를 수정한다.
 
 
 
+http://localhost:5000/add_article 방식: POST방식으로 
 
+body : {
+
+​	"title": <타이틀>,
+
+   "desc":<내용>,
+
+   "author": <글쓴이>
+
+}
+
+데이터와 함께 요청을 보내면 서버는 mysql 에 gangnam database의 list  테이블에 저장되는 기능 구현하다.
+
+app.py 다음과 같은 코드를 추가한다.
+
+
+
+```python
+@app.route('/add_article', methods=['GET', 'POST'])
+def add_article():
+    if request.method == "GET":
+        return render_template('add_article.html')
+    
+    else:
+        title = request.form["title"]
+        desc = request.form["desc"]
+        author = request.form["author"]
+
+        cursor = db_connection.cursor()
+        sql = f"INSERT INTO list (title, description, author) VALUES ('{title}', '{desc}', '{author}');"
+        cursor.execute(sql)
+        db_connection.commit()
+        return redirect('/articles')
+```
+
+
+
+
+
+templates/add_article.html 생성후 다음과 같이 코드를 추가한다.
+
+```html
+ {% extends "layout.html" %} {% block body%}
+<form action="/add_article" , method="POST">
+    <div class="form-group">
+        <label for="exampleInputEmail1">TITLE</label>
+        <input type="text" class="form-control" name="title" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="title을 입력하세요">
+
+    </div>
+
+    <div class="form-group">
+        <label for="exampleFormControlTextarea1">Example textarea</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" name="desc" rows="3" placeholder="내용입력하세요"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="exampleInputEmail1">AUTHOR</label>
+        <input type="text" class="form-control" name="author" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="글쓴이를 입력">
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% endblock %}
+```
 
