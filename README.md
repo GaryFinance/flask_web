@@ -1023,3 +1023,90 @@ edit_article.html 을 다음과 같이 수정한다.
 <a href="/articles"><button  class="btn btn-warning">BACK</button></a> {% endblock %}
 ```
 
+회원가입 및 로그인 페이지를 구현한다.
+
+먼저 http://localhost:5000/register method:GET 요청하였을떄 
+
+register.html 이 랜더링 되고
+
+SIGN UP 버튼을 누루면 
+
+
+
+http://localhost:5000/register method:POST 
+
+{ 
+
+​	"username":<username>,
+
+​	"email":<email>,
+
+​	"password":<password>
+
+}
+
+form에 형태로 요청을 하면 database gangnam에 users에 저장되도록한다.
+
+
+
+app.py파일에 다음과 같이 코드를 추가한다.
+
+```python
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method =='GET':
+        return render_template('register.html')
+    else:
+        username = request.form["username"]
+        email = request.form["email"]
+        password = request.form["password"]
+
+        cursor = db_connection.cursor()
+        sql = f"INSERT INTO users (username, email, password) VALUES ('{username}', '{email}', '{password}');"
+        cursor.execute(sql)
+        db_connection.commit()
+        return redirect('/')
+```
+
+
+
+
+
+regtister.html
+
+```python
+{% extends "layout.html" %} {% block body%}
+<h1>회원가입</h1>
+
+<form action="/register" , method="POST">
+    <div class="form-group">
+        <label for="exampleInputUsername">USERNAME</label>
+        <input type="text" class="form-control" name="username" id="exampleInputUsername" placeholder="이름을 입력하세요">
+
+    </div>
+
+    <div class="form-group">
+        <label for="exampleInputEmail1">EMAIL</label>
+        <input type="text" class="form-control" name="email" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="email을 입력하세요">
+    </div>
+
+    <div class="form-group">
+        <label for="exampleInputPassword">PASSWORD</label>
+        <input type="password" class="form-control" name="password" id="exampleInputPassword" aria-describedby="emailHelp" placeholder="비밀번호를 입력하세요">
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">SIGN UP</button>
+</form>
+
+{% endblock %}
+```
+
+
+
+
+
+그런데 
+
+회원가입을 완료하고 로그인 할때 emal 로그인을 구현 하기 위해서는 
+

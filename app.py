@@ -1,6 +1,15 @@
 from flask import Flask , render_template , redirect ,request
-from data import Articles
+# from data import Articles
 import pymysql
+
+
+app = Flask(__name__)
+
+
+ 
+ 
+# bcrypt = Bcrypt(app)
+
 
 db_connection = pymysql.connect(
 	    user    = 'root',
@@ -10,7 +19,7 @@ db_connection = pymysql.connect(
     	charset = 'utf8'
 )
 
-app = Flask(__name__)
+
 
 @app.route('/hello')
 def hello_world():
@@ -29,12 +38,18 @@ def register():
         username = request.form["username"]
         email = request.form["email"]
         password = request.form["password"]
-
         cursor = db_connection.cursor()
-        sql = f"INSERT INTO users (username, email, password) VALUES ('{username}', '{email}', '{password}');"
-        cursor.execute(sql)
-        db_connection.commit()
-        return redirect('/')
+        sql_1 = f"SELECT * FROM users WHERE email='{email}'"
+        cursor.execute(sql_1)
+        user = cursor.fetchone()
+        print(user)
+        if user == None:
+            sql = f"INSERT INTO users (username, email, password) VALUES ('{username}', '{email}', '{password}');"
+            cursor.execute(sql)
+            db_connection.commit()
+            return redirect('/')
+        else:
+            return redirect('/register')
 
 
 

@@ -1,20 +1,9 @@
-import pymysql
+from passlib.hash import pbkdf2_sha256
 
-db_connection = pymysql.connect(
-	    user    = 'root',
-        passwd  = '1234',
-    	host    = '127.0.0.1',
-    	db      = 'gangnam',
-    	charset = 'utf8'
-)
 
-cursor = db_connection.cursor()
+hash = pbkdf2_sha256.hash("1234")
+print(hash)
 
-sql = 'SELECT * FROM list;'
+result = pbkdf2_sha256.verify("1234", hash)
 
-cursor.execute(sql)
-
-topics = cursor.fetchall()
-
-print(topics)
-
+print(result)
