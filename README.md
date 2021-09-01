@@ -1108,5 +1108,38 @@ regtister.html
 
 그런데 
 
-회원가입을 완료하고 로그인 할때 emal 로그인을 구현 하기 위해서는 
+회원가입을 완료하고 로그인 할때 email 로그인을 구현 하기 위해서는 
+
+회원가입시 email은 unique해야 한다.
+
+그러므로 회원가입단에서 중복체크를 해주는 기능을 구현한다.
+
+app.py의 @app.route('/register', methods=['GET', 'POST'])....
+
+다음과 같이 수정한다.
+
+
+
+```python
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method =='GET':
+        return render_template('register.html')
+    else:
+        username = request.form["username"]
+        email = request.form["email"]
+        password = request.form["password"]
+        cursor = db_connection.cursor()
+        sql_1 = f"SELECT * FROM users WHERE email='{email}'"
+        cursor.execute(sql_1)
+        user = cursor.fetchone()
+        print(user)
+        if user == None:
+            sql = f"INSERT INTO users (username, email, password) VALUES ('{username}', '{email}', '{password}');"
+            cursor.execute(sql)
+            db_connection.commit()
+            return redirect('/')
+        else:
+            return redirect('/register')
+```
 
