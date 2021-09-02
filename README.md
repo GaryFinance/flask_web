@@ -1218,3 +1218,313 @@ def login():
 
 
 
+로그인 기능을 유지하기 위해 Session 기능을 사용한다.
+
+클라이언트(사용자)와 서버가 정보를 주고받는 쿠키(Cookie)와 세션(session).
+
+쿠키는 시간이 지나면 소멸하고, 서버의 자원을 활용하지 않고 클라이언트쪽에 저장된다. 따라서 로그인과 같은 보안기능을 활용할때는 **세션을 사용한다.** 
+
+플라스크에서는 세션을 딕셔너리형태로 제공한다. (즉, Key값을 통해 Value를 불러오는) 
+
+
+
+**로그아웃은 세션을 제거하면 끝. (pop이나 remove)**
+
+
+
+app.py 다음과 같은 코드를 추가한다.
+
+```python
+@app.route('/login' , methods=['GET', 'POST'])
+def login():
+    if request.method == "GET":
+        return render_template('login.html',user=session)
+
+    else:
+        email = request.form['email']
+        password = request.form['password']
+        sql_1 = f"SELECT * FROM users WHERE email='{email}'"
+        cursor = db_connection.cursor()
+        cursor.execute(sql_1)
+        user = cursor.fetchone()
+        print(user)
+        if user == None:
+            return redirect('/login')
+        else:
+            result = pbkdf2_sha256.verify(password, user[3])
+            if result == True:
+                session['id'] = user[0]
+                session['username'] = user[1]
+                session['email'] = user[2]
+                session['date'] = user[4]
+                print(session)
+                return redirect('/')
+            else:
+                return redirect('/login')
+```
+
+
+
+app.py의 return render_template(    ,  , user=session ) 에서 user=session 추가한다.
+
+
+
+navbar.html 다음과 같이 수정한다.
+
+```html
+<nav class="navbar navbar-expand-lg navbar-light bg-warning">
+    <a class="navbar-brand" href="/">Flask_web</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item ">
+                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/articles">Articles</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/add_article">WRITE</a>
+            </li>
+
+        </ul>
+
+    </div>
+    {% if user|length == 0 %}
+    <a href="/login" style="float: right;"><button class="btn btn-success">로그인</button> </a>
+    <a href="/register" style="float: right;"><button class="btn btn-primary">회원가입</button> </a> {% else %}
+    <a href="/logout" style="float: right;"><button class="btn btn-primary">로그아웃</button> </a> {% endif %}
+
+
+</nav>
+```
+
+
+
+
+
+
+
+로그아웃 버튼을 클릭시 기존 session 모두 초기화 시키기 위해 
+
+app.py에 다음과 같은 코드를 추가한다.
+
+```python
+@app.route('/logout',methods=['GET', 'POST'])
+def logout():
+    session.clear()
+    return redirect('/')
+
+```
+
+
+
+
+
+권한을 부여해서 로그인 상태에서만 편집 , 삭제 , 글쓰기가 가능하게  하는 기능을 구현한다.
+
+로그인 체크 , 관리자 체크하는 함수를 만들어서 데코레이터 처리해 준다.
+
+
+
+app.py 에 
+
+def is_logged_in() 와 def is_admin() 함수를 만들어서 권한을 부여할 곳에 데코레이터 함수 처리한다.
+
+
+
+app.py 다음과 같이 코드를 추가하여 최종적으로 완성한다.
+
+
+
+```python
+from flask import Flask , render_template , redirect ,request , session,url_for
+# from data import Articles
+import pymysql
+from passlib.hash import pbkdf2_sha256
+from functools import wraps
+
+app = Flask(__name__)
+
+
+app.config['SECRET_KEY'] = 'gangnam'
+db_connection = pymysql.connect(
+	    user    = 'root',
+        passwd  = '1234',
+    	host    = '127.0.0.1',
+    	db      = 'gangnam',
+    	charset = 'utf8'
+)
+
+def is_logged_in(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'is_logged' in session:
+            return f(*args , **kwargs)
+        
+        else:
+            return redirect(url_for('login'))
+    return wrap
+
+def is_admin(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if session['email'] == '2@naver.com':
+            return f(*args , **kwargs)
+        else:
+            return redirect(url_for('articles'))
+    return wrap
+
+@app.route('/hello')
+def hello_world():
+    return 'Hello World!'
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    name="KIM"
+    # print(request.headers)
+    print(len(session))
+    return render_template('index.html',data=name, user=session)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method =='GET':
+        return render_template('register.html',user=session)
+    else:
+        username = request.form["username"]
+        email = request.form["email"]
+        password = pbkdf2_sha256.hash(request.form["password"])
+        cursor = db_connection.cursor()
+        sql_1 = f"SELECT * FROM users WHERE email='{email}'"
+        cursor.execute(sql_1)
+        user = cursor.fetchone()
+        print(user)
+        if user == None:
+            sql = f"INSERT INTO users (username, email, password) VALUES ('{username}', '{email}', '{password}');"
+            cursor.execute(sql)
+            db_connection.commit()
+            return redirect('/')
+        else:
+            return redirect('/register')
+
+@app.route('/login' , methods=['GET', 'POST'])
+def login():
+    if request.method == "GET":
+        return render_template('login.html',user=session)
+
+    else:
+        email = request.form['email']
+        password = request.form['password']
+        sql_1 = f"SELECT * FROM users WHERE email='{email}'"
+        cursor = db_connection.cursor()
+        cursor.execute(sql_1)
+        user = cursor.fetchone()
+        print(user)
+        if user == None:
+            return redirect('/login')
+        else:
+            result = pbkdf2_sha256.verify(password, user[3])
+            if result == True:
+                session['id'] = user[0]
+                session['username'] = user[1]
+                session['email'] = user[2]
+                session['date'] = user[4]
+                session['is_logged'] = True
+                print(session)
+                return redirect('/')
+            else:
+                return redirect('/login')
+        
+@app.route('/logout',methods=['GET', 'POST'])
+def logout():
+    session.clear()
+    return redirect('/')
+
+@app.route('/articles', methods=['GET', 'POST'])
+def articles():
+    # list_data = Articles()
+    cursor = db_connection.cursor()
+    sql = 'SELECT * FROM list;'
+    cursor.execute(sql)
+    topics = cursor.fetchall()
+    print(topics)
+    return render_template('articles.html', data = topics,user=session)
+
+@app.route('/detail/<ids>')
+def detail(ids):
+    # list_data = Articles()
+    cursor = db_connection.cursor()
+    sql = f'SELECT * FROM list WHERE id={int(ids)};'
+    cursor.execute(sql)
+    topic = cursor.fetchone()
+    print(topic)
+    # for data in list_data:
+    #     if data['id']==int(ids):
+    #         article = data
+
+    return render_template('article.html',article=topic, user=session)
+
+@app.route('/add_article', methods=['GET', 'POST'])
+@is_logged_in
+def add_article():
+    if request.method == "GET":
+        return render_template('add_article.html')
+    
+    else:
+        title = request.form["title"]
+        desc = request.form["desc"]
+        author = request.form["author"]
+
+        cursor = db_connection.cursor()
+        sql = f"INSERT INTO list (title, description, author) VALUES ('{title}', '{desc}', '{author}');"
+        cursor.execute(sql)
+        db_connection.commit()
+        return redirect('/articles', user=session)
+
+
+@app.route('/edit_article/<ids>', methods=['GET', 'POST'])
+@is_logged_in
+def edit_article(ids):
+    if request.method == 'GET':
+        cursor = db_connection.cursor()
+        sql = f'SELECT * FROM list WHERE id={int(ids)};'   
+        cursor.execute(sql)
+        topic = cursor.fetchone()  
+        print(topic)
+        return render_template('edit_article.html', article = topic, user=session)
+
+    else:
+        title = request.form["title"]
+        desc = request.form["desc"]
+        author = request.form["author"]
+
+        cursor = db_connection.cursor()
+        sql = f"UPDATE list SET title= '{title}', description = '{desc}' ,author='{author}' WHERE (id = {int(ids)});"
+        cursor.execute(sql)
+        db_connection.commit()
+        return redirect('/articles')
+
+@app.route('/delete/<ids>', methods=['GET', 'POST'])
+@is_logged_in
+@is_admin
+def delete(ids):
+    cursor = db_connection.cursor()
+    sql = f'DELETE FROM list WHERE (id = {ids});'
+    cursor.execute(sql)
+    db_connection.commit()
+    return redirect('/articles')
+
+if __name__ == '__main__':
+    app.run( debug=True )
+
+
+
+
+```
+
+
+
+
+
