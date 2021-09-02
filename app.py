@@ -1,14 +1,10 @@
 from flask import Flask , render_template , redirect ,request
 # from data import Articles
 import pymysql
-
+from passlib.hash import pbkdf2_sha256
 
 app = Flask(__name__)
 
-
- 
- 
-# bcrypt = Bcrypt(app)
 
 
 db_connection = pymysql.connect(
@@ -37,7 +33,7 @@ def register():
     else:
         username = request.form["username"]
         email = request.form["email"]
-        password = request.form["password"]
+        password = pbkdf2_sha256.hash(request.form["password"])
         cursor = db_connection.cursor()
         sql_1 = f"SELECT * FROM users WHERE email='{email}'"
         cursor.execute(sql_1)
@@ -51,7 +47,28 @@ def register():
         else:
             return redirect('/register')
 
+@app.route('/login' , methods=['GET', 'POST'])
+def login():
+    if request.method == "GET":
+        return render_template('login.html')
 
+    else:
+        email = request.form['email']
+        password = request.form['password']
+        sql_1 = f"SELECT * FROM users WHERE email='{email}'"
+        cursor = db_connection.cursor()
+        cursor.execute(sql_1)
+        user = cursor.fetchone()
+        print(user)
+        if user == None:
+            return redirect('/login')
+        else:
+            result = pbkdf2_sha256.verify(password, user[3])
+            if result == True:
+                return "SUCCESS"
+            else:
+                return redirect('/login')
+        
 
 @app.route('/articles', methods=['GET', 'POST'])
 def articles():
