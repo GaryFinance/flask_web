@@ -1143,3 +1143,78 @@ def register():
             return redirect('/register')
 ```
 
+
+
+
+
+회원 가입시 비밀번호를 암호화 하기위하여 passlib 라이브러리를 이용하여 비밀번호를 hash코드로 변환하여 디비에 저장한다.
+
+app.py다음과 같이 수정한다.
+
+```python
+....
+from passlib.hash import pbkdf2_sha256
+....
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method =='GET':
+        return render_template('register.html')
+    else:
+        username = request.form["username"]
+        email = request.form["email"]
+        password = pbkdf2_sha256.hash(request.form["password"])
+        cursor = db_connection.cursor()
+        sql_1 = f"SELECT * FROM users WHERE email='{email}'"
+        cursor.execute(sql_1)
+        user = cursor.fetchone()
+        print(user)
+        if user == None:
+            sql = f"INSERT INTO users (username, email, password) VALUES ('{username}', '{email}', '{password}');"
+            cursor.execute(sql)
+            db_connection.commit()
+            return redirect('/')
+        else:
+            return redirect('/register')
+        
+```
+
+
+
+
+
+
+
+로그인 기능을 구현한다.
+
+app.py에 다음과 같은 코드를 추가 한다.
+
+```
+@app.route('/login' , methods=['GET', 'POST'])
+def login():
+    if request.method == "GET":
+        return render_template('login.html')
+
+    else:
+        email = request.form['email']
+        password = request.form['password']
+        sql_1 = f"SELECT * FROM users WHERE email='{email}'"
+        cursor = db_connection.cursor()
+        cursor.execute(sql_1)
+        user = cursor.fetchone()
+        print(user)
+        if user == None:
+            return redirect('/login')
+        else:
+            result = pbkdf2_sha256.verify(password, user[3])
+            if result == True:
+                return redirect('/')
+            else:
+                return redirect('/login')
+```
+
+
+
+
+

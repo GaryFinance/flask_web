@@ -1,12 +1,7 @@
 {% extends "layout.html" %} {% block body%}
 <h1>로그인</h1>
 
-<form action="/register" , method="POST">
-    <div class="form-group">
-        <label for="exampleInputUsername">USERNAME</label>
-        <input type="text" class="form-control" name="username" id="exampleInputUsername" placeholder="이름을 입력하세요">
-
-    </div>
+<form action="/login" , method="POST">
 
     <div class="form-group">
         <label for="exampleInputEmail1">EMAIL</label>
@@ -19,7 +14,7 @@
 
     </div>
 
-    <button type="submit" class="btn btn-primary">SIGN UP</button>
+    <button type="submit" class="btn btn-primary">LOGIN</button>
 </form>
 
 {% endblock %}
