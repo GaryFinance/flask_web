@@ -518,7 +518,13 @@ app.py파일을 생성후 다음과 같이 코드를 생성한다.
 
 
 ```python
-from flask import Flaskapp = Flask(__name__)@app.route('/hello')def hello_world():    return 'Hello World!'if __name__ == '__main__':    app.run()
+from flask import Flask
+app = Flask(__name__)
+@app.route('/hello')
+def hello_world():    
+    return 'Hello World!'
+if __name__ == '__main__':    
+    app.run()
 ```
 
 
@@ -550,7 +556,12 @@ app.py에 다음과 같은 코드를 추가한다.
 
 
 ```python
-....@app.route('/', methods=['GET', 'POST'])def index():    name="KIM"    return render_template('index.html',data=name)....
+....
+@app.route('/', methods=['GET', 'POST'])
+def index():    
+    name="KIM"    
+    return render_template('index.html',data=name)
+....
 ```
 
 
@@ -560,7 +571,19 @@ app.py에 다음과 같은 코드를 추가한다.
 templates/index.html 을 생성후  다음과 같은 코드를 추가한다.
 
 ```html
-<!DOCTYPE html><html lang="en"><head>    <meta charset="UTF-8">    <meta http-equiv="X-UA-Compatible" content="IE=edge">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>index 페이지</title></head><body>    <h1>INDEX PAGE</h1>    <h1>Hello {{ data }}</h1></body></html>
+<!DOCTYPE html>
+<html lang="en">
+    <head>    
+        <meta charset="UTF-8">    
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">    
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+        <title>index 페이지</title>
+    </head>
+    <body>    
+        <h1>INDEX PAGE</h1>    
+        <h1>Hello {{ data }}</h1>
+    </body>
+</html>
 ```
 
 
@@ -612,7 +635,14 @@ app.py에 다음과 같은 코드를 추가한다.
 
 
 ```python
-....from data import Articles....@app.route('/articles', methods=['GET', 'POST'])def articles():    list_data = Articles()    return render_template('articles.html', data = list_data)....
+....
+from data import Articles
+....
+@app.route('/articles', methods=['GET', 'POST'])
+def articles():    
+    list_data = Articles()    
+    return render_template('articles.html', data = list_data)
+....
 ```
 
 
@@ -620,7 +650,21 @@ app.py에 다음과 같은 코드를 추가한다.
 templates/articles.html 
 
 ```html
-<!DOCTYPE html><html lang="en"><head>    <meta charset="UTF-8">    <meta http-equiv="X-UA-Compatible" content="IE=edge">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>게시판</title></head><body>    <h1>게시판</h1>    {% for i in data %}    <h3>{{ i['title'] }} : {{ i['desc'] }}<br></h3>    {% endfor %}</body></html>
+<!DOCTYPE html>
+<html lang="en">
+    <head>    
+        <meta charset="UTF-8">    
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">    
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+        <title>게시판</title>
+    </head>
+    <body>    
+        <h1>게시판</h1>    
+        {% for i in data %}    
+        <h3>{{ i['title'] }} : {{ i['desc'] }}<br></h3>    
+        {% endfor %}
+    </body>
+</html>
 ```
 
 

@@ -3,9 +3,17 @@ from flask import Flask , render_template , redirect ,request , session,url_for
 import pymysql
 from passlib.hash import pbkdf2_sha256
 from functools import wraps
+from pymongo import MongoClient
+
 
 app = Flask(__name__)
 
+client = MongoClient("mongodb+srv://root:1234@cluster0.d6n08.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+db = client.gangnam
+db_user = client.users
+
+list = db.list
+users = db_user.users
 
 app.config['SECRET_KEY'] = 'gangnam'
 db_connection = pymysql.connect(
@@ -54,6 +62,7 @@ def register():
         username = request.form["username"]
         email = request.form["email"]
         password = pbkdf2_sha256.hash(request.form["password"])
+        users.insert_one({"username":username, "email":email, "password":password})
         cursor = db_connection.cursor()
         sql_1 = f"SELECT * FROM users WHERE email='{email}'"
         cursor.execute(sql_1)
@@ -134,12 +143,12 @@ def add_article():
         title = request.form["title"]
         desc = request.form["desc"]
         author = request.form["author"]
-
+        list.insert_one({"title":title, "description":desc, "author":author})
         cursor = db_connection.cursor()
         sql = f"INSERT INTO list (title, description, author) VALUES ('{title}', '{desc}', '{author}');"
         cursor.execute(sql)
         db_connection.commit()
-        return redirect('/articles', user=session)
+        return redirect('/articles')
 
 
 @app.route('/edit_article/<ids>', methods=['GET', 'POST'])
